@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OriGuard | Proteção de Patrimônio via WhatsApp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --og-sentinel-green: #1A3D2B;
+            --og-sentinel-dark: #0D1F16;
+            --og-sentinel-light: #2A5D43;
+            --og-ancestral-copper: #B87333;
+            --og-ancestral-copper-hover: #D48E4D;
+            --og-text-main: #F7F9F7;
+            --og-text-muted: #A3B8AC;
+            --og-white: #FFFFFF;
+            --og-bg-dark: #08140E;
+            --container-width: 1100px;
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--og-text-main);
+            background-color: var(--og-bg-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container { max-width: var(--container-width); margin: 0 auto; padding: 0 20px; }
+
+        h1, h2, h3 { font-weight: 700; line-height: 1.1; }
+
+        a { text-decoration: none; transition: var(--transition); }
+
+        /* Header */
+        .header {
+            background: var(--og-bg-dark);
+            border-bottom: 1px solid rgba(184, 115, 51, 0.2);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container { display: flex; justify-content: space-between; align-items: center; }
+
+        .nav { display: flex; align-items: center; gap: 30px; }
+
+        .nav a:not(.btn) { color: var(--og-text-muted); font-weight: 500; font-size: 0.9rem; }
+
+        .nav a:not(.btn):hover { color: var(--og-ancestral-copper); }
+
+        /* Botões */
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            border: none;
+        }
+
+        .btn-primary { background-color: var(--og-ancestral-copper); color: var(--og-white); }
+        .btn-primary:hover { background-color: var(--og-ancestral-copper-hover); transform: translateY(-2px); }
+        .btn-outline { background: transparent; color: var(--og-white); border: 1px solid var(--og-ancestral-copper); }
+        .btn-xl { padding: 18px 40px; font-size: 1.1rem; box-shadow: 0 10px 20px rgba(184, 115, 51, 0.2); }
+        .btn-secondary { background-color: var(--og-white); color: var(--og-sentinel-dark); }
+        .btn-secondary:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        /* Waitlist Form */
+        .waitlist-form { display: flex; gap: 12px; flex-wrap: wrap; }
+        .waitlist-form input[type="email"] {
+            flex: 1;
+            min-width: 240px;
+            padding: 18px 20px;
+            border-radius: 6px;
+            border: 1px solid rgba(184, 115, 51, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--og-white);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+        .waitlist-form input[type="email"]::placeholder { color: var(--og-text-muted); }
+        .waitlist-form input[type="email"]:focus { border-color: var(--og-ancestral-copper); background: rgba(255,255,255,0.08); }
+        .waitlist-form .btn { white-space: nowrap; }
+        .waitlist-success { display: none; color: var(--og-ancestral-copper); font-weight: 600; font-size: 1rem; padding: 16px 0; }
+
+        /* Waitlist Section */
+        .waitlist-section { padding: 100px 0; background: var(--og-sentinel-green); text-align: center; }
+        .waitlist-section h2 { font-size: 2.6rem; margin-bottom: 16px; }
+        .waitlist-section p { color: rgba(247, 249, 247, 0.75); font-size: 1.1rem; margin-bottom: 40px; max-width: 520px; margin-left: auto; margin-right: auto; }
+        .waitlist-section .waitlist-form { max-width: 540px; margin: 0 auto; }
+        .waitlist-section .waitlist-form input[type="email"] { background: rgba(0,0,0,0.2); border-color: rgba(247,249,247,0.2); }
+        .waitlist-section .waitlist-form input[type="email"]:focus { border-color: var(--og-ancestral-copper); }
+        .waitlist-note { margin-top: 16px; font-size: 0.85rem; color: rgba(247, 249, 247, 0.5); }
+
+        /* Hero Section */
+        .hero { padding: 100px 0; background: radial-gradient(circle at top right, var(--og-sentinel-dark) 0%, var(--og-bg-dark) 100%); }
+
+        .hero-container { display: grid; grid-template-columns: 1.2fr 0.8fr; align-items: center; gap: 60px; }
+
+        .badge {
+            display: inline-block;
+            background: rgba(184, 115, 51, 0.1);
+            color: var(--og-ancestral-copper);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            border: 1px solid rgba(184, 115, 51, 0.2);
+        }
+
+        .hero h1 { font-size: 3.8rem; margin-bottom: 24px; color: var(--og-white); }
+        .hero h1 .highlight { color: var(--og-ancestral-copper); }
+        .hero p { font-size: 1.25rem; color: var(--og-text-muted); margin-bottom: 44px; max-width: 580px; }
+
+        .hero-actions { display: flex; flex-direction: column; gap: 20px; }
+
+        .trust-indicators { display: flex; gap: 24px; font-size: 0.85rem; font-weight: 500; color: var(--og-text-muted); }
+
+        /* Mockup WhatsApp */
+        .mockup-whatsapp {
+            background: #0B141A;
+            border-radius: 24px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+            overflow: hidden;
+            width: 100%;
+            max-width: 360px;
+            margin-left: auto;
+            border: 10px solid #222;
+        }
+
+        .chat-header { background: #1F2C34; padding: 14px 18px; display: flex; align-items: center; gap: 12px; color: #E9EDEF; }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--og-sentinel-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--og-white);
+        }
+
+        .chat-info strong { display: block; font-size: 0.9rem; }
+        .chat-info span { font-size: 0.7rem; color: #8696A0; }
+
+        .chat-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 420px;
+            background-color: #0B141A;
+            background-image: radial-gradient(circle, #1F2C34 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .date-badge { align-self: center; background: rgba(31, 44, 52, 0.8); padding: 5px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 500; color: #8696A0; margin-bottom: 10px; }
+
+        .msg { padding: 10px 14px; border-radius: 10px; font-size: 0.85rem; max-width: 85%; line-height: 1.4; }
+        .received { background: #1F2C34; color: #E9EDEF; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .sent { background: #005C4B; color: #E9EDEF; align-self: flex-end; border-bottom-right-radius: 2px; }
+
+        /* Pain Section */
+        .pain-section { padding: 100px 0; background: var(--og-sentinel-dark); }
+        .section-header { text-align: center; margin-bottom: 70px; }
+        .section-header h2 { font-size: 2.8rem; margin-bottom: 20px; color: var(--og-white); }
+
+        .pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .pain-card { padding: 40px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(184, 115, 51, 0.1); border-radius: 20px; text-align: center; }
+
+        .pain-icon-box {
+            width: 48px;
+            height: 48px;
+            background: rgba(184, 115, 51, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            color: var(--og-ancestral-copper);
+        }
+
+        .pain-card p { color: var(--og-text-muted); font-size: 1.05rem; }
+
+        /* How it works */
+        .how-it-works { padding: 100px 0; background: var(--og-bg-dark); }
+        .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+        .step-num { width: 56px; height: 56px; background: var(--og-ancestral-copper); color: var(--og-white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; margin: 0 auto 28px; }
+        .step h3 { margin-bottom: 16px; text-align: center; color: var(--og-white); }
+        .step p { text-align: center; color: var(--og-text-muted); }
+
+        /* Features Cards Section (RESTORED) */
+        .features-cards { padding: 100px 0; background: var(--og-bg-dark); }
+        .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+        .feature-item { padding: 40px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(184, 115, 51, 0.1); border-radius: 20px; }
+        .feature-item h3 { color: var(--og-ancestral-copper); margin-bottom: 15px; }
+        .feature-item p { color: var(--og-text-muted); }
+
+        /* Differentiator */
+        .differentiator { padding: 120px 0; background: var(--og-sentinel-dark); }
+        .diff-container { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+        .no-app { color: var(--og-ancestral-copper); }
+
+        .check-list { list-style: none; margin-top: 40px; }
+        .check-list li { padding: 12px 0; display: flex; align-items: center; gap: 12px; font-weight: 500; color: var(--og-text-main); }
+        .check-list li::before { content: "✓"; color: var(--og-ancestral-copper); font-weight: 700; }
+
+        /* Pricing */
+        .pricing { padding: 120px 0; background: var(--og-bg-dark); }
+        .pricing-card { max-width: 540px; margin: 0 auto; padding: 60px 50px; border-radius: 28px; background: linear-gradient(145deg, rgba(26, 61, 43, 0.4) 0%, rgba(13, 31, 22, 0.4) 100%); border: 2px solid var(--og-ancestral-copper); text-align: center; position: relative; }
+        .pricing-tag { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); background: var(--og-ancestral-copper); color: var(--og-white); padding: 6px 24px; border-radius: 100px; font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; }
+        .price { font-size: 4.5rem; font-weight: 700; margin: 24px 0; color: var(--og-white); }
+        .price span { font-size: 1.1rem; color: var(--og-text-muted); }
+        .pricing-list { list-style: none; text-align: left; margin: 40px 0; }
+        .pricing-list li { padding: 14px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: var(--og-text-main); }
+        .trial-info { margin-top: 24px; font-size: 0.9rem; color: var(--og-text-muted); }
+
+        /* CTA Final (RESTORED) */
+        .cta-final { padding: 100px 0; background: var(--og-sentinel-green); color: var(--og-white); text-align: center; }
+        .cta-final h2 { font-size: 3rem; margin-bottom: 24px; }
+        .cta-final p { margin-bottom: 40px; font-size: 1.2rem; opacity: 0.9; }
+
+        /* Footer */
+        .footer { padding: 60px 0; background: var(--og-bg-dark); border-top: 1px solid rgba(255, 255, 255, 0.05); }
+        .footer-container { display: flex; justify-content: space-between; color: var(--og-text-muted); font-size: 0.9rem; }
+
+        @media (max-width: 992px) {
+            .hero-container, .diff-container { grid-template-columns: 1fr; text-align: center; }
+            .hero h1 { font-size: 2.8rem; }
+            .mockup-whatsapp { margin: 40px auto 0; }
+            .pain-grid, .steps-grid, .features-grid { grid-template-columns: 1fr; }
+            .hero p { margin: 0 auto 40px; }
+            .trust-indicators { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <svg width="200" height="50" viewBox="0 0 360 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="OriGuard — logo completo">
+                    <g transform="translate(10,10) scale(0.8)">
+                        <!-- Hexágono escudo — Cobre Ancestral no Dark Theme para destaque -->
+                        <polygon points="50,4 88,27 88,73 50,96 12,73 12,27" fill="#B87333" opacity="0.9"/>
+                        
+                        <!-- Borda interna hexagonal -->
+                        <polygon points="50,11 82,31.5 82,68.5 50,89 18,68.5 18,31.5"
+                                 fill="none" stroke="#F7F9F7" stroke-width="1.25" opacity="0.3"/>
+
+                        <!-- Olho de Ori -->
+                        <path d="M22,50 Q50,27 78,50 Q50,73 22,50 Z"
+                              fill="none" stroke="#F7F9F7" stroke-width="2.25"/>
+
+                        <!-- Íris — anel externo -->
+                        <circle cx="50" cy="50" r="14" fill="none" stroke="#F7F9F7" stroke-width="1.875"/>
+
+                        <!-- Íris — anel interno -->
+                        <circle cx="50" cy="50" r="9" fill="none" stroke="#F7F9F7" stroke-width="1.25" opacity="0.65"/>
+
+                        <!-- Pupila -->
+                        <circle cx="50" cy="50" r="5" fill="#F7F9F7"/>
+
+                        <!-- Reflexo -->
+                        <circle cx="53.5" cy="46.5" r="1.8" fill="#FFFFFF" opacity="0.8"/>
+                    </g>
+
+                    <!-- Logotipo: Ori (Branco) | Guard (Cobre) -->
+                    <text x="118" y="57"
+                          font-family="'Plus Jakarta Sans', sans-serif"
+                          font-size="34">
+                        <tspan font-weight="700" fill="#F7F9F7">Ori</tspan><tspan font-weight="500" fill="#B87333">Guard</tspan>
+                    </text>
+
+                    <!-- Tagline (opcional, mas incluída para fidelidade) -->
+                    <text x="119" y="75"
+                          font-family="'Plus Jakarta Sans', sans-serif"
+                          font-size="11.5" font-weight="400" fill="#A3B8AC" letter-spacing="0.6">
+                        Vigilância que não dorme.
+                    </text>
+                </svg>
+            </div>
+            <nav class="nav">
+                <a href="#como-funciona">Como funciona</a>
+                <a href="#pricing">Preço</a>
+                <a href="#waitlist" class="btn btn-outline">Entrar na lista</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO -->
+        <section class="hero">
+            <div class="container hero-container">
+                <div class="hero-content">
+                    <span class="badge">SaaS de Manutenção Inteligente</span>
+                    <h1>Sua manutenção resolvida no <span class="highlight">WhatsApp.</span></h1>
+                    <p>Chega de equipamentos parados e custos surpresa. Proteja seu patrimônio físico sem que sua equipe precise instalar nenhum app.</p>
+                    <div class="hero-actions">
+                        <form class="waitlist-form" action="https://formspree.io/f/xnjolrbp" method="POST" onsubmit="handleSubmit(event, this)">
+                            <input type="email" name="email" placeholder="Seu melhor e-mail" required autocomplete="email">
+                            <button type="submit" class="btn btn-xl btn-primary">Entrar na lista</button>
+                        </form>
+                        <div class="waitlist-success">Recebemos seu e-mail. Avisaremos quando abrir o acesso.</div>
+                        <div class="trust-indicators">
+                            <span>✓ Sem cartão de crédito</span>
+                            <span>✓ Acesso antecipado em breve</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="mockup-whatsapp">
+                        <div class="chat-header">
+                            <div class="avatar">OG</div>
+                            <div class="chat-info">
+                                <strong>OriGuard (Zelador Digital)</strong>
+                                <span>Online</span>
+                            </div>
+                        </div>
+                        <div class="chat-body">
+                            <div class="date-badge">HOJE</div>
+                            <div class="msg received">Escaneie o QR Code do ativo para iniciar um chamado.</div>
+                            <div class="msg sent">Foto do Ar-Condicionado enviada</div>
+                            <div class="msg received">
+                                <strong>Chamado #124 Aberto</strong><br>
+                                Tipo: Falha no Compressor<br>
+                                Técnico Notificado: Roberto Silva
+                            </div>
+                            <div class="msg received">
+                                Roberto está a caminho para o reparo.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAIN SECTION -->
+        <section class="pain-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Gerir manutenção manualmente é um prejuízo invisível.</h2>
+                </div>
+                <div class="pain-grid">
+                    <div class="pain-card">
+                        <div class="pain-icon-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        </div>
+                        <p>Seu WhatsApp lotado de mensagens de técnicos e reclamações de clientes que você não consegue rastrear.</p>
+                    </div>
+                    <div class="pain-card">
+                        <div class="pain-icon-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <p>O faturamento para porque um ativo quebrou sem aviso. O custo da emergência é 5x maior que a prevenção.</p>
+                    </div>
+                    <div class="pain-card">
+                        <div class="pain-icon-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <p>A equipe muda e o histórico vai embora. Você não sabe quem mexeu, quando e quanto custou manter cada ativo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HOW IT WORKS -->
+        <section id="como-funciona" class="how-it-works">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Controle total em 3 passos simples.</h2>
+                </div>
+                <div class="steps-grid">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <h3>Conecte seu WhatsApp</h3>
+                        <p>Em 2 minutos seu WhatsApp vira uma central inteligente para gerir seus ativos.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <h3>Espalhe os QR Codes</h3>
+                        <p>Cada equipamento ganha uma identidade única. O técnico apenas aponta a câmera e abre o chamado.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <h3>Proteja sua Margem</h3>
+                        <p>Acompanhe o histórico de custos e vida útil de cada ativo direto no seu painel web.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURES CARDS (RESTORED) -->
+        <section class="features-cards">
+            <div class="container">
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <h3>Zero App para Campo</h3>
+                        <p>Técnicos e zeladores operam 100% via WhatsApp. Adoção imediata sem necessidade de qualquer treinamento.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>Gestão de Ativos</h3>
+                        <p>Organize todos os seus ativos por categoria, local e unidade. Tenha o controle do que você possui.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>Custo por Ativo</h3>
+                        <p>Saiba exatamente quanto cada equipamento custou em manutenção. Decisões de troca baseadas em dados.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>Histórico Centralizado</h3>
+                        <p>Todas as ordens de serviço, fotos e mensagens ficam salvas no histórico de cada ativo para sempre.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DIFFERENTIATOR -->
+        <section class="differentiator">
+            <div class="container diff-container">
+                <div class="diff-content">
+                    <h2>Seus técnicos <span class="no-app">não instalam nada.</span></h2>
+                    <p>A maior barreira para adotar um software de manutenção é a resistência da equipe. Com OriGuard, eles usam o que já amam: o WhatsApp.</p>
+                    <ul class="check-list">
+                        <li>Adoção imediata sem treinamento</li>
+                        <li>Envio de fotos e áudios direto no chat</li>
+                        <li>Baixa de serviço instantânea</li>
+                        <li>Histórico na palma da mão</li>
+                    </ul>
+                </div>
+                <div class="diff-image">
+                    <svg width="100%" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="400" height="300" rx="20" fill="rgba(184, 115, 51, 0.05)" />
+                        <!-- QR Code Stylized -->
+                        <g transform="translate(60, 80)">
+                            <rect width="80" height="80" rx="8" fill="var(--og-ancestral-copper)" opacity="0.2" />
+                            <path d="M20 20h15v5h-10v10h-5V20zM45 20h15v15h-5v-10h-10V20zM20 45v15h15v-5h-10v-10h-5zM60 60h-15v-5h10V45h5v15z" fill="var(--og-ancestral-copper)" />
+                            <rect x="35" y="35" width="10" height="10" fill="var(--og-ancestral-copper)" />
+                        </g>
+                        <!-- WhatsApp Stylized -->
+                        <g transform="translate(200, 100)">
+                            <rect width="140" height="100" rx="12" fill="#1F2C34" stroke="var(--og-ancestral-copper)" stroke-width="1" />
+                            <circle cx="30" cy="30" r="10" fill="var(--og-sentinel-green)" />
+                            <rect x="50" y="25" width="60" height="4" rx="2" fill="#8696A0" />
+                            <rect x="50" y="35" width="40" height="3" rx="1.5" fill="#8696A0" opacity="0.5" />
+                            <rect x="30" y="60" width="80" height="20" rx="4" fill="#005C4B" />
+                            <rect x="40" y="68" width="60" height="4" rx="2" fill="white" opacity="0.8" />
+                        </g>
+                        <!-- Connection Line -->
+                        <path d="M145 120 Q170 120 190 140" fill="none" stroke="var(--og-ancestral-copper)" stroke-width="2" stroke-dasharray="4 4" />
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRICING -->
+        <section id="pricing" class="pricing">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Preço transparente para quem cuida do que tem.</h2>
+                </div>
+                <div class="pricing-card">
+                    <div class="pricing-tag">PLANO GUARDIÃO</div>
+                    <div class="pricing-header">
+                        <div class="price">R$ 199 <span>/mês</span></div>
+                        <p>Tudo o que você precisa para começar</p>
+                    </div>
+                    <ul class="pricing-list">
+                        <li><strong>✓ Gestão 100% via WhatsApp</strong></li>
+                        <li>✓ Cadastro de até 50 Ativos</li>
+                        <li>✓ QR Codes Individuais Ilimitados</li>
+                        <li>✓ Painel de Controle Web para o Gestor</li>
+                        <li>✓ Histórico Completo de Manutenções</li>
+                        <li>✓ Suporte via WhatsApp</li>
+                    </ul>
+                    <a href="#waitlist" class="btn btn-xl btn-primary">Garantir Acesso Antecipado</a>
+                    <p class="trial-info">Sem cartão de crédito. Avisamos quando abrir.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- WAITLIST SECTION -->
+        <section id="waitlist" class="waitlist-section">
+            <div class="container">
+                <h2>Vigilância que não dorme.</h2>
+                <p>Seja dos primeiros gestores a ter controle real sobre cada ativo — sem planilha, sem caos no WhatsApp.</p>
+                <form class="waitlist-form" action="https://formspree.io/f/xnjolrbp" method="POST" onsubmit="handleSubmit(event, this)">
+                    <input type="email" name="email" placeholder="Seu melhor e-mail" required autocomplete="email">
+                    <button type="submit" class="btn btn-xl btn-primary">Garantir meu acesso</button>
+                </form>
+                <div class="waitlist-success" style="display:none; color:#F7F9F7; padding:16px 0; font-weight:600;">Recebemos seu e-mail. Avisaremos quando abrir o acesso.</div>
+                <p class="waitlist-note">Sem spam. Avisamos apenas quando o acesso abrir.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <p>&copy; 2026 OriGuard. Uma solução OriCode.</p>
+            <div class="footer-links">
+                <a href="#" style="color: var(--og-text-muted); margin-left: 20px;">Termos</a>
+                <a href="#" style="color: var(--og-text-muted); margin-left: 20px;">Privacidade</a>
+            </div>
+        </div>
+    </footer>
+    <script>
+        function handleSubmit(e, form) {
+            e.preventDefault();
+            const data = new FormData(form);
+            fetch(form.action, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } })
+                .then(r => {
+                    if (r.ok) {
+                        form.style.display = 'none';
+                        form.nextElementSibling.style.display = 'block';
+                    } else {
+                        alert('Erro ao enviar. Tente novamente.');
+                    }
+                })
+                .catch(() => alert('Erro de conexão. Tente novamente.'));
+        }
+    </script>
+</body>
+</html>
